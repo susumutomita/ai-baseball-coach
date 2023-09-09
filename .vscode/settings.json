@@ -1,7 +1,11 @@
 {
   "cSpell.words": [
     "azuretools",
-    "baseballcoach"
+    "baseballcoach",
+    "numpy",
+    "pylint",
+    "pytest",
+    "setuptools"
   ],
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
