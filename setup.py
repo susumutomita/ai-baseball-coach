@@ -9,7 +9,8 @@ setup(
     install_requires=[
         "pytest-watch",
         "transformers",
-        "pre-commit"
+        "pre-commit",
+        "torch"
     ],
     entry_points={
         "console_scripts": [
