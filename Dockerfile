@@ -3,7 +3,7 @@ FROM continuumio/miniconda3
 
 # 必要なパッケージをインストールし、NodeSource GPGキーを追加
 RUN apt-get update && \
-  apt-get install -y ca-certificates curl gnupg && \
+  apt-get install -y ca-certificates curl gnupg make && \
   apt-get update && \
   apt-get install -y nodejs
 

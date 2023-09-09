@@ -2,5 +2,9 @@
   "cSpell.words": [
     "azuretools",
     "baseballcoach"
-  ]
+  ],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.formatting.provider": "none"
 }

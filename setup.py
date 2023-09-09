@@ -8,6 +8,8 @@ setup(
     ],
     install_requires=[
         "pytest-watch",
+        "transformers",
+        "pre-commit"
     ],
     entry_points={
         "console_scripts": [

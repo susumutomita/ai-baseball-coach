@@ -17,3 +17,5 @@ dependencies:
   - setuptools>=65.5.1
   - pip:
       - pytest-watch
+      - transformers
+      - pre-commit

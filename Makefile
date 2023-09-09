@@ -1,6 +1,11 @@
 .PHONY: install
 install:
-	conda env create -f environment.yml && pre-commit install && npm install
+	@if conda env list | grep -q 'ai-baseballcoach'; then \
+		conda env update -f environment.yml; \
+	else \
+		conda env create -f environment.yml; \
+	fi
+	pre-commit install && npm install
 
 .PHONY: test
 test:
