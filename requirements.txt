@@ -1,0 +1,14 @@
+numpy==1.20.*
+pandas==1.2.*
+pytest
+pytest-cov
+pytest-mock
+yamllint
+black
+pylint
+flake8
+setuptools>=65.5.1
+pytest-watch
+transformers
+pre-commit
+torch
