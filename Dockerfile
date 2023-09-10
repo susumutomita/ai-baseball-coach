@@ -30,4 +30,5 @@ SHELL ["conda", "run", "-n", "ai-baseballcoach", "/bin/bash", "-c"]
 COPY . .
 
 # npmとpipで依存関係をインストール
+RUN make install
 RUN pip install .
