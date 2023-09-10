@@ -1,4 +1,14 @@
-pytest-watch
 transformers
 pre-commit
 torch
+pytest
+pytest-cov
+pytest-mock
+pytest-watch
+isort
+yamllint
+black
+pylint
+flake8
+python-dateutil
+setuptools>=65.5.1

@@ -3,6 +3,7 @@
   "dockerComposeFile": "../docker-compose.yaml",
   "service": "ai-baseballcoach",
   "workspaceFolder": "/app",
+  "postCreateCommand": "pip install -r requirements.txt && pre-commit install",
   "customizations": {
     "vscode": {
       "settings": {

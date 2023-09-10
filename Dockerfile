@@ -4,7 +4,14 @@ FROM continuumio/miniconda3
 # 必要なパッケージをインストールし、NodeSource GPGキーを追加
 RUN apt-get update && \
   apt-get install -y ca-certificates curl gnupg make && \
-  apt-get update && \
+  mkdir -p /etc/apt/keyrings && \
+  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+
+# debリポジトリを作成
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main" > /etc/apt/sources.list.d/nodesource.list
+
+# Node.jsをインストール
+RUN apt-get update && \
   apt-get install -y nodejs
 
 # 作業ディレクトリの設定

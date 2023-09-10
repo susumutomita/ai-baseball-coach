@@ -1,5 +1,5 @@
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import torch
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
 
 def main():
@@ -23,5 +23,5 @@ def main():
     print(output_text)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

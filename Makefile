@@ -5,7 +5,7 @@ install:
 	else \
 		conda env create -f environment.yml; \
 	fi
-	pre-commit install && npm install && pip install .
+	pip install -r requirements.txt && pre-commit install && npm install
 
 .PHONY: test
 test:
