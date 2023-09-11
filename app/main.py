@@ -1,11 +1,13 @@
 import torch
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+from transformers import GPT2Tokenizer, pipeline
 
 
 def main():
     # トークナイザとモデルの初期化
     tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-    model = GPT2LMHeadModel.from_pretrained("gpt2")
+    # model = GPT2LMHeadModel.from_pretrained("gpt2")
+    # model = AutoModel.from_pretrained("TheBloke/Llama-2-7B-Chat-GGML")
+    model = pipeline("text-generation", model="TheBloke/Llama-2-7B-Chat-GGML")
 
     # 入力テキスト
     input_text = "Hello, how are you?"
