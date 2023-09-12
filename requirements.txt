@@ -13,3 +13,6 @@ pylint
 flake8
 python-dateutil
 setuptools>=65.5.1
+
+protobuf
+sentencepiece

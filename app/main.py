@@ -1,29 +1,47 @@
-import torch
-from transformers import GPT2Tokenizer, pipeline
+import argparse
 
+from transformers import MBart50TokenizerFast, MBartForConditionalGeneration, pipeline
 
-def main():
-    # トークナイザとモデルの初期化
-    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-    # model = GPT2LMHeadModel.from_pretrained("gpt2")
-    # model = AutoModel.from_pretrained("TheBloke/Llama-2-7B-Chat-GGML")
-    model = pipeline("text-generation", model="TheBloke/Llama-2-7B-Chat-GGML")
+# 引数処理
+parser = argparse.ArgumentParser()
+parser.add_argument("--file", type=str)
+optvar = parser.parse_args()
 
-    # 入力テキスト
-    input_text = "Hello, how are you?"
+# モデルの入手
+model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-one-to-many-mmt")
 
-    # テキストをトークンに変換
-    input_ids = tokenizer.encode(input_text, return_tensors="pt")
+# トークナイザの入手
+tokenizer = MBart50TokenizerFast.from_pretrained("facebook/mbart-large-50-one-to-many-mmt")
 
-    # モデルで推論
-    with torch.no_grad():
-        output = model.generate(input_ids, max_length=50)
+# ソース言語・ターゲット言語の指定
+tokenizer.src_lang = "en_XX"
+tokenizer.tgt_lang = "ja_XX"
 
-    # 生成されたテキストをデコード
-    output_text = tokenizer.decode(output[0], skip_special_tokens=True)
+# トークナイザに投入する文字列長の指定
+tokenizer.model_maxlength = 2048
 
-    print(output_text)
+# Pipelineを使用して翻訳タスクを実行するオブジェクトを作成する
+pipe = pipeline(
+    "translation",
+    model=model,
+    tokenizer=tokenizer,
+    src_lang="en_XX",
+    tgt_lang="ja_XX",
+    device="cpu",
+    batch_size=16,
+)
 
+# 翻訳元ファイルを開いて、翻訳処理を開始する
+with open(optvar.file) as f:
+    for line in f:
+        # 翻訳処理を実行する。最大長は1024とし、truncate処理は有効にする
+        translations = pipe(line, max_length=1024, truncation=True)
 
-if __name__ == "__main__":
-    main()
+        # 原文の表示
+        print(line)
+
+        # 翻訳結果の表示
+        print(str(translations[0]["translation_text"]))
+
+        # 空行を挿入
+        print("\n")
