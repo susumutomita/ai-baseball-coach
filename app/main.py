@@ -1,44 +1,69 @@
-import argparse
+import torch
+import transformers
+from transformers import AutoTokenizer
 
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+model = "meta-llama/Llama-2-7b-chat-hf"
+revision = "0ede8dd71e923db6258295621d817ca8714516d4"
 
-# 引数処理
-parser = argparse.ArgumentParser()
-parser.add_argument("--file", type=str)
-optvar = parser.parse_args()
-
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
-
-# ソース言語・ターゲット言語の指定
-tokenizer.src_lang = "en_XX"
-tokenizer.tgt_lang = "ja_XX"
-
-# トークナイザに投入する文字列長の指定
-tokenizer.model_maxlength = 2048
-
-# Pipelineを使用して翻訳タスクを実行するオブジェクトを作成する
-pipe = pipeline(
-    "translation",
+tokenizer = AutoTokenizer.from_pretrained(model, padding_side="left")
+pipeline = transformers.pipeline(
+    "text-generation",
     model=model,
     tokenizer=tokenizer,
-    src_lang="en_XX",
-    tgt_lang="ja_XX",
-    device="cpu",
-    batch_size=16,
+    torch_dtype=torch.bfloat16,
+    trust_remote_code=True,
+    device_map="auto",
+    revision=revision,
+    return_full_text=False,
 )
 
-# 翻訳元ファイルを開いて、翻訳処理を開始する
-with open(optvar.file) as f:
-    for line in f:
-        # 翻訳処理を実行する。最大長は1024とし、truncate処理は有効にする
-        translations = pipe(line, max_length=1024, truncation=True)
+# Required tokenizer setting for batch inference
+pipeline.tokenizer.pad_token_id = tokenizer.eos_token_id
 
-        # 原文の表示
-        print(line)
 
-        # 翻訳結果の表示
-        print(str(translations[0]["translation_text"]))
+INSTRUCTION_KEY = "### Instruction:"
+RESPONSE_KEY = "### Response:"
+INTRO_BLURB = "Below is an instruction that describes a task. Write a response that"
+"appropriately completes the request."
+PROMPT_FOR_GENERATION_FORMAT = """{intro}
+{instruction_key}
+{instruction}
+{response_key}
+""".format(
+    intro=INTRO_BLURB,
+    instruction_key=INSTRUCTION_KEY,
+    instruction="{instruction}",
+    response_key=RESPONSE_KEY,
+)
 
-        # 空行を挿入
-        print("\n")
+
+# Define parameters to generate text
+def gen_text(prompts, use_template=False, **kwargs):
+    if use_template:
+        full_prompts = [
+            PROMPT_FOR_GENERATION_FORMAT.format(instruction=prompt) for prompt in prompts
+        ]
+    else:
+        full_prompts = prompts
+
+    if "batch_size" not in kwargs:
+        kwargs["batch_size"] = 1
+
+    if "max_new_tokens" not in kwargs:
+        kwargs["max_new_tokens"] = 512
+
+    kwargs.update(
+        {
+            "pad_token_id": tokenizer.eos_token_id,
+            "eos_token_id": tokenizer.eos_token_id,
+        }
+    )
+
+    outputs = pipeline(full_prompts, **kwargs)
+    outputs = [out[0]["generated_text"] for out in outputs]
+
+    return outputs
+
+
+results = gen_text(["What is a large language model?"])
+print(results[0])
