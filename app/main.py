@@ -1,17 +1,14 @@
 import argparse
 
-from transformers import MBart50TokenizerFast, MBartForConditionalGeneration, pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 # 引数処理
 parser = argparse.ArgumentParser()
 parser.add_argument("--file", type=str)
 optvar = parser.parse_args()
 
-# モデルの入手
-model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-one-to-many-mmt")
-
-# トークナイザの入手
-tokenizer = MBart50TokenizerFast.from_pretrained("facebook/mbart-large-50-one-to-many-mmt")
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
 
 # ソース言語・ターゲット言語の指定
 tokenizer.src_lang = "en_XX"

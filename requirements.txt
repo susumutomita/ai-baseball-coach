@@ -13,6 +13,6 @@ pylint
 flake8
 python-dateutil
 setuptools>=65.5.1
-
+huggingface_hub
 protobuf
 sentencepiece
