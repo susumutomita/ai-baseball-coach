@@ -2,10 +2,12 @@ import torch
 import transformers
 from transformers import AutoTokenizer
 
+# モデルとトークナイザの設定
 model = "meta-llama/Llama-2-7b-chat-hf"
 revision = "0ede8dd71e923db6258295621d817ca8714516d4"
-
 tokenizer = AutoTokenizer.from_pretrained(model, padding_side="left")
+
+# パイプラインの設定
 pipeline = transformers.pipeline(
     "text-generation",
     model=model,
@@ -17,53 +19,35 @@ pipeline = transformers.pipeline(
     return_full_text=False,
 )
 
-# Required tokenizer setting for batch inference
+# トークナイザのパッド設定
 pipeline.tokenizer.pad_token_id = tokenizer.eos_token_id
 
+# チームのルール（マークダウン形式）
+TEAM_RULES = """
+# Team Rules
 
+1. Always be respectful to each other.
+2. Communicate openly.
+3. ...
+"""
+
+# プロンプト生成のためのテンプレート
 INSTRUCTION_KEY = "### Instruction:"
 RESPONSE_KEY = "### Response:"
-INTRO_BLURB = "Below is an instruction that describes a task. Write a response that"
-"appropriately completes the request."
-PROMPT_FOR_GENERATION_FORMAT = """{intro}
-{instruction_key}
-{instruction}
-{response_key}
-""".format(
-    intro=INTRO_BLURB,
-    instruction_key=INSTRUCTION_KEY,
-    instruction="{instruction}",
-    response_key=RESPONSE_KEY,
-)
+INTRO_BLURB = "Below is an instruction that describes a task."
+"Write a response that appropriately completes the request."
 
 
-# Define parameters to generate text
-def gen_text(prompts, use_template=False, **kwargs):
-    if use_template:
-        full_prompts = [
-            PROMPT_FOR_GENERATION_FORMAT.format(instruction=prompt) for prompt in prompts
-        ]
-    else:
-        full_prompts = prompts
-
-    if "batch_size" not in kwargs:
-        kwargs["batch_size"] = 1
-
-    if "max_new_tokens" not in kwargs:
-        kwargs["max_new_tokens"] = 512
-
-    kwargs.update(
-        {
-            "pad_token_id": tokenizer.eos_token_id,
-            "eos_token_id": tokenizer.eos_token_id,
-        }
-    )
-
+# テキスト生成パラメータの設定
+def gen_text(prompts, **kwargs):
+    full_prompts = [
+        f"{INTRO_BLURB}\n{INSTRUCTION_KEY}\n{prompt}\n{RESPONSE_KEY}\n{TEAM_RULES}"
+        for prompt in prompts
+    ]
     outputs = pipeline(full_prompts, **kwargs)
-    outputs = [out[0]["generated_text"] for out in outputs]
-
-    return outputs
+    return [out[0]["generated_text"] for out in outputs]
 
 
-results = gen_text(["What is a large language model?"])
+# テキスト生成のテスト
+results = gen_text(["What should a team member do if they are running late?"])
 print(results[0])
