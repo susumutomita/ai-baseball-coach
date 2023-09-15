@@ -23,13 +23,8 @@ pipeline = transformers.pipeline(
 pipeline.tokenizer.pad_token_id = tokenizer.eos_token_id
 
 # チームのルール（マークダウン形式）
-TEAM_RULES = """
-# Team Rules
-
-1. Always be respectful to each other.
-2. Communicate openly.
-3. ...
-"""
+with open("team_rules.md", "r", encoding="utf-8") as f:
+    TEAM_RULES = f.read()
 
 # プロンプト生成のためのテンプレート
 INSTRUCTION_KEY = "### Instruction:"
