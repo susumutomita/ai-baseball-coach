@@ -1,28 +1,27 @@
 from transformers import pipeline
 
-# モデルとトークナイザの設定
+
+def read_markdown_file(file_path):
+    with open(file_path, "r", encoding="utf-8") as file:
+        return file.read()
+
+
+team_rules_path = "/app/app/team_rules.md"
+prompt_template_path = "/app/app/prompt_template.txt"
+
+TEAM_RULES = read_markdown_file(team_rules_path)
+PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
+
 pipe = pipeline(task="text-generation")
-
-# チームのルール（マークダウン形式）
-with open("team_rules.md", "r", encoding="utf-8") as f:
-    TEAM_RULES = f.read()
-
-# プロンプト生成のためのテンプレート
-INSTRUCTION_KEY = "### Instruction:"
-RESPONSE_KEY = "### Response:"
-INTRO_BLURB = "Below is an instruction that describes a task. "
-"Write a response that appropriately completes the request."
 
 
 # テキスト生成パラメータの設定
 def gen_text(prompts, **kwargs):
-    full_prompts = [
-        f"{INTRO_BLURB}\n{INSTRUCTION_KEY}\n{prompt}\n{RESPONSE_KEY}\n{TEAM_RULES}"
-        for prompt in prompts
-    ]
+    full_prompts = [f"{PROMPT_FOR_GENERATION_FORMAT}\n{prompt}\n{TEAM_RULES}" for prompt in prompts]
     outputs = pipe(full_prompts, **kwargs)
     return [out[0]["generated_text"] for out in outputs]
 
 
-results = gen_text(["ユニフォームのルールについて教えて"], max_length=100)
+# テキスト生成のテスト
+results = gen_text(["What should a team member do if they are running late?"], max_length=100)
 print(results[0])
