@@ -2,6 +2,7 @@ transformers
 pre-commit
 torch
 open-interpreter
+gitpython
 pytest
 pytest-cov
 pytest-mock
