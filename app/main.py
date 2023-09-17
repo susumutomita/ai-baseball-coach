@@ -6,11 +6,12 @@ from transformers import pipeline
 
 def read_all_markdown_files(directory_path):
     team_rules = ""
-    for filename in os.listdir(directory_path):
-        if filename.endswith(".ja_jp.md"):
-            filepath = os.path.join(directory_path, filename)
-            with open(filepath, "r", encoding="utf-8") as file:
-                team_rules += file.read() + "\n\n"
+    for root, dirs, files in os.walk(directory_path):
+        for filename in files:
+            if filename.endswith(".ja_jp.md"):
+                filepath = os.path.join(root, filename)
+                with open(filepath, "r", encoding="utf-8") as file:
+                    team_rules += file.read() + "\n\n"
     return team_rules
 
 
@@ -21,11 +22,11 @@ def read_markdown_file(file_path):
 
 repo_url = os.environ.get("REPO_URL", "https://github.com/xerosbaseball/terms")
 local_directory = "/app/app/rules/"
-
+search_directory = "/app/app/rules/content/game"
 # レポジトリをクローン（注：既にディレクトリが存在する場合はこの行をコメントアウト）
 git.Repo.clone_from(repo_url, local_directory)
 
-TEAM_RULES = read_all_markdown_files(local_directory)
+TEAM_RULES = read_all_markdown_files(search_directory)
 prompt_template_path = "/app/app/prompt_template.txt"
 PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
 
