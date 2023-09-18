@@ -1,6 +1,5 @@
 import os
 
-import git
 from transformers import pipeline
 
 
@@ -20,11 +19,7 @@ def read_markdown_file(file_path):
         return file.read()
 
 
-repo_url = os.environ.get("REPO_URL", "https://github.com/xerosbaseball/terms")
-local_directory = "/app/app/rules/"
-search_directory = "/app/app/rules/content/game"
-# レポジトリをクローン（注：既にディレクトリが存在する場合はこの行をコメントアウト）
-git.Repo.clone_from(repo_url, local_directory)
+search_directory = "/app/app/"
 
 TEAM_RULES = read_all_markdown_files(search_directory)
 prompt_template_path = "/app/app/prompt_template.txt"
