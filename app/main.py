@@ -19,14 +19,13 @@ def read_markdown_file(file_path):
         return file.read()
 
 
-search_directory = "/app/app/"
+search_directory = "./app/"
 
 TEAM_RULES = read_all_markdown_files(search_directory)
-prompt_template_path = "/app/app/prompt_template.txt"
+prompt_template_path = "./prompt_template.txt"
 PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
 
-# pipe = pipeline(task="text-generation")
-pipe = pipeline("text-generation", model="meta-llama/Llama-2-7b-chat-hf")
+pipe = pipeline(task="text-generation")
 
 
 def gen_text(prompts, **kwargs):
