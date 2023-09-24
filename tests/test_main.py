@@ -6,4 +6,5 @@ import unittest
 
 class TestLineNotify(unittest.TestCase):
     def test_add_01(self):
-        assert 11 == 11
+        ans = 2
+        assert ans == 2
