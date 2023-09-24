@@ -17,15 +17,6 @@ RUN apt-get update && \
 # 作業ディレクトリの設定
 WORKDIR /app
 
-# environment.ymlをコンテナにコピー
-COPY environment.yml .
-
-# Conda環境を作成
-RUN conda env create -f environment.yml
-
-# Conda環境を有効化
-SHELL ["conda", "run", "-n", "ai-baseballcoach", "/bin/bash", "-c"]
-
 # アプリケーションのコードをコピー（必要に応じて）
 COPY . .
 
