@@ -34,5 +34,5 @@ def gen_text(prompts, **kwargs):
     return [out[0]["generated_text"] for out in outputs]
 
 
-results = gen_text(["What should a team member do if they are running late?"], max_length=100)
+results = gen_text(["What should a team member do if they are running late"], max_length=100)
 print(results[0])
