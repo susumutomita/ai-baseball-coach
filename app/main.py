@@ -20,7 +20,6 @@ def read_markdown_file(file_path):
 
 
 search_directory = "./app/"
-
 TEAM_RULES = read_all_markdown_files(search_directory)
 prompt_template_path = "./prompt_template.txt"
 PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
@@ -34,5 +33,9 @@ def gen_text(prompts, **kwargs):
     return [out[0]["generated_text"] for out in outputs]
 
 
-results = gen_text(["What should a team member do if they are running late"], max_length=100)
-print(results[0])
+while True:
+    user_input = input("質問を入力してください（終了するには'quit'と入力）: ")
+    if user_input.lower() == "quit":
+        break
+    results = gen_text([user_input], max_length=100)
+    print("応答:", results[0])
