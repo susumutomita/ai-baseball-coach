@@ -1,5 +1,6 @@
 import os
 
+from llama_cpp import Llama
 from transformers import pipeline
 
 
@@ -37,5 +38,13 @@ while True:
     user_input = input("質問を入力してください（終了するには'quit'と入力）: ")
     if user_input.lower() == "quit":
         break
-    results = gen_text([user_input], max_length=100)
-    print("応答:", results[0])
+    model_path = "~/llama/llama-2-7b/ggml-model-f32_q4_0.bin"
+    model = Llama(
+        model_path=model_path,
+        n_ctx=2048,  # context window size
+        n_gpu_layers=1,  # enable GPU
+        use_mlock=True,
+    )  # enable memory lock so not swap
+    output = model(prompt=user_input, max_tokens=120, temperature=0.2)
+    output
+    print("応答:", output)
