@@ -24,8 +24,7 @@ TEAM_RULES = read_all_markdown_files(search_directory)
 prompt_template_path = "./prompt_template.txt"
 PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
 
-# Llama モデルのロード
-model_path = "..//model/llama-2-7b-chat/ggml-model-f16_q4_0.bin"
+model_path = "../model/llama-2-7b-chat/ggml-model-f16_q4_0.bin"
 model = Llama(
     model_path=model_path,
     n_ctx=2048,  # context window size
@@ -38,13 +37,8 @@ while True:
     if user_input.lower() == "quit":
         break
 
-    # プロンプトの整形
     full_prompt = f"{PROMPT_FOR_GENERATION_FORMAT}\n{user_input}\n{TEAM_RULES}"
-
-    # モデルによるテキスト生成
     output = model(prompt=full_prompt, max_tokens=120, temperature=0.2)
-
-    # 応答テキストの取得
     response_text = output.get("choices", [{}])[0].get("text", "No response generated.")
 
     print("応答:", response_text)
