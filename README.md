@@ -1,6 +1,7 @@
-[![CI](https://github.com/susumutomita/ai-baseball-coach/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/susumutomita/ai-baseball-coach/actions/workflows/ci.yml)[![codecov](https://codecov.io/gh/susumutomita/ai-baseball-coach/graph/badge.svg?token=jQWnU0GsXp)](https://codecov.io/gh/susumutomita/ai-baseball-coach)
+# AI Baseball Coach
 
-# ai-baseball-coach
+[![CI](https://github.com/susumutomita/ai-baseball-coach/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/susumutomita/ai-baseball-coach/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/susumutomita/ai-baseball-coach/graph/badge.svg?token=jQWnU0GsXp)](https://codecov.io/gh/susumutomita/ai-baseball-coach)
 
 ## Overview
 
@@ -9,7 +10,7 @@ This project aims to assist baseball coaching efforts through the use of AI. It 
 ## Requirements
 
 - Python 3.x
-- Transformers library
+- Transformers Library
 
 ## Installation
 
@@ -28,3 +29,10 @@ pip install transformers
 ```bash
 python main.py
 ```
+
+### Download and Quantize the Official Facebook Model
+
+1. Download the model from [Facebook's Llama repository](https://github.com/facebookresearch/llama).
+2. Convert and quantize the downloaded model using [llama.cpp](https://github.com/ggerganov/llama.cpp).
+
+For detailed instructions, please refer to [Detailed_Instructions.md](Detailed_Instructions.md).
