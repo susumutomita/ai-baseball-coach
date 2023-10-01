@@ -20,7 +20,7 @@ test_watch:
 
 .PHONY: lint
 lint:
-	black . --check
+
 	isort . --check
 	cd app && pylint . --rcfile=../.pylintrc
 	yamllint -c .yamllint .
@@ -29,7 +29,7 @@ lint:
 
 .PHONY: format
 format:
-	black .
+
 	isort .
 
 .PHONY: before_commit

@@ -17,3 +17,4 @@ setuptools>=65.5.1
 huggingface_hub
 protobuf
 sentencepiece
+Flask
