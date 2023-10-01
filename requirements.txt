@@ -18,3 +18,4 @@ huggingface_hub
 protobuf
 sentencepiece
 Flask
+llama-cpp-python
