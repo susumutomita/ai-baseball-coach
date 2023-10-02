@@ -1,8 +1,5 @@
 transformers
 pre-commit
-torch
-torchvision
-open-interpreter
 pytest
 pytest-cov
 pytest-mock
@@ -18,4 +15,3 @@ huggingface_hub
 protobuf
 sentencepiece
 Flask
-
