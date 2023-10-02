@@ -6,11 +6,6 @@
   "postCreateCommand": "pip install -r requirements.txt && pre-commit install",
   "customizations": {
     "vscode": {
-      "settings": {
-        "terminal.integrated.fontFamily": "JetBrainsMono",
-        "terminal.integrated.fontSize": 14,
-        "terminal.integrated.shell.linux": "/bin/bash"
-      },
       "extensions": [
         "ms-azuretools.vscode-docker",
         "streetsidesoftware.code-spell-checker",
@@ -21,8 +16,7 @@
         "ms-azuretools.vscode-docker",
         "ms-vscode.makefile-tools",
         "ms-python.python",
-        "ms-python.flake8",
-        "streetsidesoftware.code-spell-checker"
+        "ms-python.flake8"
       ]
     }
   },
