@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, jsonify, request
-from models import BaseModel, LlamaModel, PlamoModel
+from models import BaseModel, PlamoModel
 
 app = Flask(__name__)
 
@@ -24,9 +24,7 @@ def read_markdown_file(file_path):
 
 model_type = os.environ.get("MODEL_TYPE", "Plamo")
 
-if model_type == "Llama":
-    model: BaseModel = LlamaModel(model_path="../model/llama-2-7b-chat/ggml-model-f16_q4_0.bin")
-elif model_type == "Plamo":
+if model_type == "Plamo":
     model: BaseModel = PlamoModel(model_name="pfnet/plamo-13b")
 
 # マークダウンファイルとプロンプトテンプレートの読み込み
