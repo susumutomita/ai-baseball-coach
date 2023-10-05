@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, jsonify, request
-from llama_cpp import Llama
+from models import BaseModel, LlamaModel, PlamoModel
 
 app = Flask(__name__)
 
@@ -22,29 +22,34 @@ def read_markdown_file(file_path):
         return file.read()
 
 
-# 以下の設定もそのまま
+model_type = os.environ.get("MODEL_TYPE", "Plamo")
+
+if model_type == "Llama":
+    model: BaseModel = LlamaModel(model_path="../model/llama-2-7b-chat/ggml-model-f16_q4_0.bin")
+elif model_type == "Plamo":
+    model: BaseModel = PlamoModel(model_name="pfnet/plamo-13b")
+
+# マークダウンファイルとプロンプトテンプレートの読み込み
 search_directory = "./app/"
 TEAM_RULES = read_all_markdown_files(search_directory)
 prompt_template_path = "./prompt_template.txt"
 PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
 
-# モデルのロード
-model_path = "../model/llama-2-7b-chat/ggml-model-f16_q4_0.bin"
-model = Llama(
-    model_path=model_path,
-    n_ctx=2048,
-    n_gpu_layers=1,
-    use_mlock=True,
-)
-
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    user_input = request.json.get("question", "")
+    # 入力パラメータのバリデーション
+    json_data = request.json
+    if json_data is None:
+        return jsonify({"error": "Invalid input, JSON expected"}), 400
 
+    user_input = json_data.get("question")
+    if not user_input:
+        return jsonify({"error": "Missing 'question' field in input JSON"}), 400
+
+    # プロンプトの生成とレスポンスの取得
     full_prompt = f"{PROMPT_FOR_GENERATION_FORMAT}\n{user_input}\n{TEAM_RULES}"
-    output = model(prompt=full_prompt, max_tokens=120, temperature=0.2)
-    response_text = output.get("choices", [{}])[0].get("text", "No response generated.")
+    response_text = model.generate_text(prompt=full_prompt, max_tokens=120, temperature=0.2)
 
     # 'Response:' 以降のテキストを取り出す
     response_only = (
