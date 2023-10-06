@@ -6,7 +6,7 @@ from .base_model import BaseModel
 class PlamoModel(BaseModel):
     def __init__(self, model_name: str):
         self.pipeline = transformers.pipeline(
-            "text-generation", model="pfnet/plamo-13b", trust_remote_code=True
+            "text-generation", model=model_name, trust_remote_code=True
         )
 
     def load_model(self, model_path: str):
