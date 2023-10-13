@@ -1,0 +1,47 @@
+openapi: 3.0.0
+info:
+  title: AI Baseball Coach API
+  version: 1.0.0
+  description: An API to assist baseball coaching efforts through the use of AI.
+
+servers:
+  - url: http://localhost:5000
+
+paths:
+  /ask:
+    post:
+      summary: Generate a response based on the question provided.
+      requestBody:
+        description: A JSON object containing the question.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                question:
+                  type: string
+                  example: "What should I do to improve my pitching?"
+      responses:
+        200:
+          description: A generated response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    example: "To improve your pitching, focus on your grip and follow-through."
+        400:
+          description: Invalid input or missing 'question' field.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Missing 'question' field in input JSON."

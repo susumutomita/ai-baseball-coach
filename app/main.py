@@ -36,6 +36,11 @@ prompt_template_path = "./prompt_template.txt"
 PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
 
 
+@app.route("/docs")
+def docs():
+    return app.send_static_file("../docs/ai_baseball_coach_api.yaml")
+
+
 @app.route("/ask", methods=["POST"])
 def ask():
     # 入力パラメータのバリデーション
