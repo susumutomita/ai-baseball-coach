@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, jsonify, request
-from models import BaseModel, PlamoModel
+from models import BaseModel, GptModel, PlamoModel
 
 app = Flask(__name__)
 
@@ -22,10 +22,12 @@ def read_markdown_file(file_path):
         return file.read()
 
 
-model_type = os.environ.get("MODEL_TYPE", "Plamo")
+model_type = os.environ.get("MODEL_TYPE", "gpt2")
 
 if model_type == "Plamo":
     model: BaseModel = PlamoModel(model_name="pfnet/plamo-13b")
+elif model_type == "gpt2":
+    model: BaseModel = GptModel(model_name="gpt2")
 
 # マークダウンファイルとプロンプトテンプレートの読み込み
 search_directory = "./app/"
