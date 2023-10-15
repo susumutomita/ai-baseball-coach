@@ -15,4 +15,5 @@ huggingface_hub
 protobuf
 sentencepiece
 Flask
-flask-restx
+flask-cors
+flask_swagger_ui

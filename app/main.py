@@ -1,9 +1,22 @@
 import os
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
 from models import BaseModel, GptModel, PlamoModel
 
-app = Flask(__name__, static_folder="../static")
+app = Flask(__name__)
+CORS(app)
+
+SWAGGER_URL = "/api/docs"
+API_URL = "/static/ai_baseball_coach_api.yaml"
+
+# Swagger UI設定
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL, API_URL, config={"app_name": "My Flask App"}
+)
+
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 
 def read_all_markdown_files(directory_path):
@@ -36,13 +49,8 @@ prompt_template_path = "./prompt_template.txt"
 PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
 
 
-@app.route("/docs")
-def docs():
-    return app.send_static_file("ai_baseball_coach_api.yaml")
-
-
 @app.route("/question", methods=["POST"])
-def ask():
+def question():
     # 入力パラメータのバリデーション
     json_data = request.json
     if json_data is None:
@@ -67,4 +75,4 @@ def ask():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(port=5000)
