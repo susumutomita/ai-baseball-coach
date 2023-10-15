@@ -3,7 +3,7 @@ import os
 from flask import Flask, jsonify, request
 from models import BaseModel, GptModel, PlamoModel
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../static")
 
 
 def read_all_markdown_files(directory_path):
@@ -38,10 +38,10 @@ PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
 
 @app.route("/docs")
 def docs():
-    return app.send_static_file("../docs/ai_baseball_coach_api.yaml")
+    return app.send_static_file("ai_baseball_coach_api.yaml")
 
 
-@app.route("/ask", methods=["POST"])
+@app.route("/question", methods=["POST"])
 def ask():
     # 入力パラメータのバリデーション
     json_data = request.json

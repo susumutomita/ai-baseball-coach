@@ -15,3 +15,4 @@ huggingface_hub
 protobuf
 sentencepiece
 Flask
+flask-restx
