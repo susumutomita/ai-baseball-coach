@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_restx import Api, Resource
+from flask_restx import Api, Resource, fields
 from models import BaseModel, GptModel, PlamoModel
 
 app = Flask(__name__)
@@ -40,8 +40,15 @@ prompt_template_path = "./prompt_template.txt"
 PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
 
 
+question_model = api.model(
+    "Question",
+    {"question": fields.String(required=True, description="The question you want to ask")},
+)
+
+
 @api.route("/api/question")
 class QuestionResource(Resource):
+    @api.expect(question_model, validate=True)
     @api.doc(
         params={"question": "The question you want to ask."},
     )
@@ -67,4 +74,4 @@ class QuestionResource(Resource):
 
 
 if __name__ == "__main__":
-    app.run(port=5000, host="0.0.0.0")
+    app.run(port=5001, host="0.0.0.0")
