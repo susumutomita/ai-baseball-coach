@@ -2,21 +2,12 @@ import os
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_swagger_ui import get_swaggerui_blueprint
+from flask_restx import Api, Resource
 from models import BaseModel, GptModel, PlamoModel
 
 app = Flask(__name__)
 CORS(app)
-
-SWAGGER_URL = "/api/docs"
-API_URL = "/static/ai_baseball_coach_api.yaml"
-
-# Swagger UI設定
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL, API_URL, config={"app_name": "My Flask App"}
-)
-
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+api = Api(app)
 
 
 def read_all_markdown_files(directory_path):
@@ -49,30 +40,31 @@ prompt_template_path = "./prompt_template.txt"
 PROMPT_FOR_GENERATION_FORMAT = read_markdown_file(prompt_template_path)
 
 
-@app.route("/question", methods=["POST"])
-def question():
-    # 入力パラメータのバリデーション
-    json_data = request.json
-    if json_data is None:
-        return jsonify({"error": "Invalid input, JSON expected"}), 400
-
-    user_input = json_data.get("question")
-    if not user_input:
-        return jsonify({"error": "Missing 'question' field in input JSON"}), 400
-
-    # プロンプトの生成とレスポンスの取得
-    full_prompt = f"{PROMPT_FOR_GENERATION_FORMAT}\n{user_input}\n{TEAM_RULES}"
-    response_text = model.generate_text(prompt=full_prompt, max_tokens=120, temperature=0.2)
-
-    # 'Response:' 以降のテキストを取り出す
-    response_only = (
-        response_text.split("Response:")[1].strip()
-        if "Response:" in response_text
-        else response_text
+@api.route("/api/question")
+class QuestionResource(Resource):
+    @api.doc(
+        params={"question": "The question you want to ask."},
     )
+    def post(self):
+        json_data = request.json
+        if json_data is None:
+            return jsonify({"error": "Invalid input, JSON expected"}), 400
 
-    return jsonify({"response": response_only})
+        user_input = json_data.get("question")
+        if not user_input:
+            return jsonify({"error": "Missing 'question' field in input JSON"}), 400
+
+        full_prompt = f"{PROMPT_FOR_GENERATION_FORMAT}\n{user_input}\n{TEAM_RULES}"
+        response_text = model.generate_text(prompt=full_prompt, max_tokens=120, temperature=0.2)
+
+        response_only = (
+            response_text.split("Response:")[1].strip()
+            if "Response:" in response_text
+            else response_text
+        )
+
+        return jsonify({"response": response_only})
 
 
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run(port=5000, host="0.0.0.0")
