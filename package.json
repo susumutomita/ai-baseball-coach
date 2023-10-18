@@ -2,7 +2,6 @@
   "name": "ai-baseballcoach",
   "version": "1.0.0",
   "devDependencies": {
-    "redoc-cli": "^0.13.21",
     "textlint": "^13.3.3",
     "textlint-rule-no-mixed-zenkaku-and-hankaku-alphabet": "^1.0.1",
     "textlint-rule-no-mixed-zenkaku-and-hankaku-number": "^1.0.0",
