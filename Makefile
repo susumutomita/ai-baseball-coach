@@ -34,7 +34,3 @@ format:
 
 .PHONY: before_commit
 before_commit: test format lint
-
-.PHONY: run
-run:
-	ai-baseballcoach

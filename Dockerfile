@@ -24,3 +24,6 @@ RUN mkdir -p /etc/apt/keyrings && \
 
 COPY . .
 RUN make install
+
+WORKDIR /app/app
+CMD ["python", "main.py"]
