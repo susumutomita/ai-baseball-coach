@@ -14,7 +14,7 @@ setuptools>=65.5.1
 huggingface_hub
 protobuf
 sentencepiece
-Flask>=2.3.3,<3.0.0
+Flask>=2.3.3,<4.0.0
 flask-cors
 flask-restx
 flask_oauthlib
