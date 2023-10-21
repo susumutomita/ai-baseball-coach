@@ -17,5 +17,6 @@ sentencepiece
 Flask>=2.3.3,<3.0.0
 flask-cors
 flask-restx
+flask_oauthlib
 torch
 torchvision

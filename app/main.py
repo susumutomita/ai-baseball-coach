@@ -1,6 +1,7 @@
 import os
 
-from flask import Flask, jsonify, request
+import flask_oauthlib.client
+from flask import Flask, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
 from models import BaseModel, GptModel, PlamoModel
@@ -11,8 +12,28 @@ PROMPT_TEMPLATE_PATH = "./prompt_template.txt"
 DEFAULT_MODEL_TYPE = "gpt2"
 
 app = Flask(__name__)
+app.secret_key = "this is secret"  # これを追加
 CORS(app)
 api = Api(app)
+
+# OAuthの設定
+oauth = flask_oauthlib.client.OAuth(app)
+# 環境変数から読み込む
+AUTH0_CLIENT_ID = os.environ.get("AUTH0_CLIENT_ID", "YourDefaultAUTH0_CLIENT_ID")
+AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET", "YourDefaultAUTH0_CLIENT_SECRET")
+AUTH0_BASE_URL = os.environ.get("AUTH0_BASE_URL", "https://YourDefaultAuth0Domain/")
+AUTH0_AUDIENCE = os.environ.get("AUTH0_AUDIENCE", "YourDefaultAuth0Audience")
+
+auth0 = oauth.remote_app(
+    "auth0",
+    consumer_key=AUTH0_CLIENT_ID,
+    consumer_secret=AUTH0_CLIENT_SECRET,
+    request_token_params={"scope": "openid profile", "audience": AUTH0_AUDIENCE},
+    base_url=AUTH0_BASE_URL,
+    access_token_method="POST",
+    access_token_url="/oauth/token",
+    authorize_url="/authorize",
+)
 
 
 def read_files(directory_path, file_extension):
@@ -69,6 +90,33 @@ class QuestionResource(Resource):
             else response_text
         )
         return jsonify({"response": response_only})
+
+
+@app.route("/login")
+def login():
+    return auth0.authorize(callback=url_for("auth_callback", _external=True))
+
+
+@app.route("/callback")
+def auth_callback():
+    resp = auth0.authorized_response()
+    if resp is None:
+        return "Access denied", 403
+    session["profile"] = resp  # 例として、プロフィール情報をセッションに格納
+    return redirect("/mypage")
+
+
+@app.route("/mypage")
+def mypage():
+    if not session.get("profile"):
+        return redirect("/login")
+    return "This is mypage"
+
+
+@app.route("/logout")
+def logout():
+    session.pop("profile", None)
+    return redirect("/")
 
 
 if __name__ == "__main__":
