@@ -1,6 +1,9 @@
 import os
+from os import environ as env
+from urllib.parse import quote_plus, urlencode
 
-import flask_oauthlib.client
+from authlib.integrations.flask_client import OAuth
+from dotenv import find_dotenv, load_dotenv
 from flask import Flask, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
@@ -12,27 +15,25 @@ PROMPT_TEMPLATE_PATH = "./prompt_template.txt"
 DEFAULT_MODEL_TYPE = "gpt2"
 
 app = Flask(__name__)
-app.secret_key = "this is secret"  # これを追加
+app.secret_key = env.get("APP_SECRET_KEY")
 CORS(app)
 api = Api(app)
 
-# OAuthの設定
-oauth = flask_oauthlib.client.OAuth(app)
-# 環境変数から読み込む
-AUTH0_CLIENT_ID = os.environ.get("AUTH0_CLIENT_ID", "YourDefaultAUTH0_CLIENT_ID")
-AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET", "YourDefaultAUTH0_CLIENT_SECRET")
-AUTH0_BASE_URL = os.environ.get("AUTH0_BASE_URL", "https://YourDefaultAuth0Domain/")
-AUTH0_AUDIENCE = os.environ.get("AUTH0_AUDIENCE", "YourDefaultAuth0Audience")
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
 
-auth0 = oauth.remote_app(
+
+oauth = OAuth(app)
+
+oauth.register(
     "auth0",
-    consumer_key=AUTH0_CLIENT_ID,
-    consumer_secret=AUTH0_CLIENT_SECRET,
-    request_token_params={"scope": "openid profile", "audience": AUTH0_AUDIENCE},
-    base_url=AUTH0_BASE_URL,
-    access_token_method="POST",
-    access_token_url="/oauth/token",
-    authorize_url="/authorize",
+    client_id=env.get("AUTH0_CLIENT_ID"),
+    client_secret=env.get("AUTH0_CLIENT_SECRET"),
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration',
 )
 
 
@@ -92,31 +93,39 @@ class QuestionResource(Resource):
         return jsonify({"response": response_only})
 
 
+# Controllers API
+@app.route("/")
+def home():
+    return redirect("/")
+
+
+@app.route("/callback", methods=["GET", "POST"])
+def callback():
+    token = oauth.auth0.authorize_access_token()
+    session["user"] = token
+    return redirect("/")
+
+
 @app.route("/login")
 def login():
-    return auth0.authorize(callback=url_for("auth_callback", _external=True))
-
-
-@app.route("/callback")
-def auth_callback():
-    resp = auth0.authorized_response()
-    if resp is None:
-        return "Access denied", 403
-    session["profile"] = resp  # 例として、プロフィール情報をセッションに格納
-    return redirect("/mypage")
-
-
-@app.route("/mypage")
-def mypage():
-    if not session.get("profile"):
-        return redirect("/login")
-    return "This is mypage"
+    return oauth.auth0.authorize_redirect(redirect_uri=url_for("callback", _external=True))
 
 
 @app.route("/logout")
 def logout():
-    session.pop("profile", None)
-    return redirect("/")
+    session.clear()
+    return redirect(
+        "https://"
+        + env.get("AUTH0_DOMAIN")
+        + "/v2/logout?"
+        + urlencode(
+            {
+                "returnTo": url_for("home", _external=True),
+                "client_id": env.get("AUTH0_CLIENT_ID"),
+            },
+            quote_via=quote_plus,
+        )
+    )
 
 
 if __name__ == "__main__":
