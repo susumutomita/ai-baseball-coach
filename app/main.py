@@ -1,10 +1,11 @@
+import json
 import os
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
 
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
-from flask import Flask, jsonify, redirect, request, session, url_for
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
 from models import BaseModel, GptModel, PlamoModel
@@ -68,35 +69,14 @@ question_model = api.model(
 )
 
 
-@api.route("/api/question")
-class QuestionResource(Resource):
-    @api.expect(question_model, validate=True)
-    def post(self):
-        if not request.json:
-            return error_response("Invalid input, JSON expected", 400)
-
-        user_input = request.json.get("question")
-        if not user_input:
-            return error_response("Missing 'question' field in input JSON", 400)
-
-        return self.generate_response(user_input)
-
-    def generate_response(self, user_input):
-        full_prompt = f"{PROMPT_FOR_GENERATION_FORMAT}\n{user_input}\n{TEAM_RULES}"
-        response_text = model.generate_text(prompt=full_prompt, max_tokens=120, temperature=0.2)
-
-        response_only = (
-            response_text.split("Response:")[1].strip()
-            if "Response:" in response_text
-            else response_text
-        )
-        return jsonify({"response": response_only})
-
-
 # Controllers API
 @app.route("/")
 def home():
-    return redirect("/")
+    return render_template(
+        "home.html",
+        session=session.get("user"),
+        pretty=json.dumps(session.get("user"), indent=4),
+    )
 
 
 @app.route("/callback", methods=["GET", "POST"])
@@ -128,5 +108,30 @@ def logout():
     )
 
 
+@api.route("/api/question")
+class QuestionResource(Resource):
+    @api.expect(question_model, validate=True)
+    def post(self):
+        if not request.json:
+            return error_response("Invalid input, JSON expected", 400)
+
+        user_input = request.json.get("question")
+        if not user_input:
+            return error_response("Missing 'question' field in input JSON", 400)
+
+        return self.generate_response(user_input)
+
+    def generate_response(self, user_input):
+        full_prompt = f"{PROMPT_FOR_GENERATION_FORMAT}\n{user_input}\n{TEAM_RULES}"
+        response_text = model.generate_text(prompt=full_prompt, max_tokens=120, temperature=0.2)
+
+        response_only = (
+            response_text.split("Response:")[1].strip()
+            if "Response:" in response_text
+            else response_text
+        )
+        return jsonify({"response": response_only})
+
+
 if __name__ == "__main__":
-    app.run(port=8080, host="0.0.0.0")
+    app.run(host="0.0.0.0", port=env.get("PORT", 8080))
