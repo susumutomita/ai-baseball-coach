@@ -69,6 +69,18 @@ question_model = api.model(
 )
 
 
+@app.before_request
+def require_login():
+    allowed_routes = ["callback", "login", "logout"]
+    if request.endpoint not in allowed_routes:
+        if "user" not in session:
+            return redirect("/login")
+    # Swaggerのページにも認証を要求
+    if request.endpoint == "api.specs" or request.path.startswith("/swagger-ui/"):
+        if "user" not in session:
+            return redirect("/login")
+
+
 # Controllers API
 @app.route("/")
 def home():
