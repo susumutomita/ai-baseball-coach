@@ -1,5 +1,8 @@
 name: Terraform Lint and Format Check
 
+permissions:
+  pull-requests: write
+
 on:
   pull_request:
     paths:
@@ -18,16 +21,48 @@ jobs:
         working-directory: tool/infrastructure
     steps:
       - name: Checkout repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.6.2"
 
       - name: Initialize Terraform workspace
+        id: init
         run: terraform init
 
       - name: Check Terraform formatting
+        id: format
         run: make format_check
 
       - name: Validate Terraform configuration
+        id: lint
         run: make lint
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.format.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Lint 🤖\`${{ steps.lint.outcome }}\`
+            <details><summary>Lint Output</summary>
+
+            \`\`\`\n
+            ${{ steps.lint.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
