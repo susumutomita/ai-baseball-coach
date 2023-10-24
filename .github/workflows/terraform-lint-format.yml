@@ -28,6 +28,19 @@ jobs:
         with:
           terraform_version: "1.6.2"
 
+      - name: Setup Terraform linter
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: latest
+
+      - name: Show tflint version
+        run: tflint --version
+
+      - name: Initialize tflint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Initialize Terraform workspace
         id: init
         run: terraform init
@@ -39,30 +52,3 @@ jobs:
       - name: Validate Terraform configuration
         id: lint
         run: make lint
-
-      - uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
-        env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.format.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Lint 🤖\`${{ steps.lint.outcome }}\`
-            <details><summary>Lint Output</summary>
-
-            \`\`\`\n
-            ${{ steps.lint.outputs.stdout }}
-            \`\`\`
-
-            </details>
-
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })

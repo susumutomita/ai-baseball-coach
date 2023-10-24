@@ -1,6 +1,6 @@
 .PHONY: lint
 lint:
-	tflint
+	tflint --recursive
 	terraform validate
 
 .PHONY: format
