@@ -1,8 +1,5 @@
 name: Terraform Lint and Format Check
 
-permissions:
-  pull-requests: write
-
 on:
   pull_request:
     paths:
