@@ -1,0 +1,33 @@
+name: Terraform Lint and Format Check
+
+on:
+  pull_request:
+    paths:
+      - 'tool/infrastructure/**/*.tf'
+  push:
+    branches:
+      - main
+    paths:
+      - 'tool/infrastructure/**/*.tf'
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tool/infrastructure
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Initialize Terraform workspace
+        run: terraform init
+
+      - name: Check Terraform formatting
+        run: make format_check
+
+      - name: Validate Terraform configuration
+        run: make lint

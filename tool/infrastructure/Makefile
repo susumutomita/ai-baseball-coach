@@ -1,0 +1,15 @@
+.PHONY: lint
+lint:
+	tflint
+	terraform validate
+
+.PHONY: format
+format:
+	terraform fmt --recursive
+
+.PHONY: format_check
+format_check:
+	terraform fmt --check --recursive
+
+.PHONY: before_commit
+before_commit: format lint

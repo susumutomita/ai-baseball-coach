@@ -2,6 +2,10 @@
 
 This repository provides configurations for setting up Auth0 using Terraform.
 
+## Note
+
+This setup is intended to be provisioned using Terraform Cloud. It is not designed for provisioning directly from a local environment.
+
 ## Prerequisites
 
 - Terraform installed
