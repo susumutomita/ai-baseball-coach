@@ -16,7 +16,7 @@ This setup is intended to be provisioned using Terraform Cloud. It is not design
 1. Clone the repository.
 
 ```bash
-git clone [repository URL]
+git clone <repository URL>
 ```
 
 2. Create a `.env` file in the root directory of the project with the following content:
