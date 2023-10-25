@@ -28,6 +28,18 @@ variable "client_secret" {
   default     = "sample client secret"
 }
 
+variable "callback_domains" {
+  description = "List of callback domains"
+  type        = list(string)
+  default     = ["127.0.0.1:8080", "localhost:8080"]
+}
+
+variable "callback_path" {
+  description = "Callback path"
+  type        = string
+  default     = "/callback"
+}
+
 variable "domain" {
   description = "The domain of auth0"
   type        = string
