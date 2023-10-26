@@ -31,7 +31,7 @@ variable "client_secret" {
 variable "callback_domains" {
   description = "List of callback domains"
   type        = list(string)
-  default     = ["127.0.0.1:8080", "localhost:8080"]
+  default     = ["http://127.0.0.1:8080", "http://localhost:8080"]
 }
 
 variable "callback_path" {
