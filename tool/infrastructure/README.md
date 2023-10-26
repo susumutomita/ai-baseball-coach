@@ -1,3 +1,5 @@
+[![Terraform Lint and Format Check](https://github.com/susumutomita/ai-baseball-coach/actions/workflows/terraform-lint-format.yml/badge.svg?branch=main)](https://github.com/susumutomita/ai-baseball-coach/actions/workflows/terraform-lint-format.yml)
+
 # Auth0 Configuration with Terraform
 
 This repository provides configurations for setting up Auth0 using Terraform.
