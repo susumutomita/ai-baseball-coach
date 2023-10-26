@@ -46,6 +46,12 @@ variable "domain" {
   default     = "sampledomain.auth0.com"
 }
 
+variable "oidc_conformant" {
+  description = "Specify if the client is OIDC Conformant"
+  type        = bool
+  default     = true
+}
+
 variable "pre_fix" {
   description = "Prefix for the Auth0 client"
   type        = string
