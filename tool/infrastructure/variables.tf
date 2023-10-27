@@ -46,6 +46,18 @@ variable "domain" {
   default     = "sampledomain.auth0.com"
 }
 
+variable "jwt_alg" {
+  description = "The algorithm used to sign the JWT"
+  type        = string
+  default     = "RS256"
+}
+
+variable "jwt_lifetime_in_seconds" {
+  description = "The lifetime of the JWT in seconds"
+  type        = number
+  default     = 36000
+}
+
 variable "oidc_conformant" {
   description = "Specify if the client is OIDC Conformant"
   type        = bool
