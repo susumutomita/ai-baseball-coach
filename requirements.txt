@@ -1,3 +1,4 @@
+Authlib
 transformers
 pre-commit
 pytest

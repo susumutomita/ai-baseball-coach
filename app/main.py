@@ -122,8 +122,16 @@ def logout():
 
 @api.route("/api/question")
 class QuestionResource(Resource):
+    def check_auth(self):
+        if "user" not in session:
+            return redirect("/login")
+        return None
+
     @api.expect(question_model, validate=True)
     def post(self):
+        auth_result = self.check_auth()
+        if auth_result:
+            return auth_result
         if not request.json:
             return error_response("Invalid input, JSON expected", 400)
 
