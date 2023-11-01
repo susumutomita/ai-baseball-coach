@@ -16,18 +16,6 @@ variable "client_app_type" {
   default     = "regular_web"
 }
 
-variable "client_id" {
-  description = "The client_id of auth0"
-  type        = string
-  default     = "sample client id"
-}
-
-variable "client_secret" {
-  description = "The client secret of auth0"
-  type        = string
-  default     = "sample client secret"
-}
-
 variable "callback_domains" {
   description = "List of callback domains"
   type        = list(string)
@@ -38,12 +26,6 @@ variable "callback_path" {
   description = "Callback path"
   type        = string
   default     = "/callback"
-}
-
-variable "domain" {
-  description = "The domain of auth0"
-  type        = string
-  default     = "sampledomain.auth0.com"
 }
 
 variable "jwt_alg" {
