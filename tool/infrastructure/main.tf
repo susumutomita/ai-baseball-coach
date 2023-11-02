@@ -1,6 +1,6 @@
 # terraform module creating auth0 resources
 module "auth0-app" {
-  source                  = "./module/auth0"
+  source                  = "./module/auth0/application"
   client_name             = var.client_name
   client_description      = var.client_description
   client_app_type         = var.client_app_type
@@ -13,13 +13,6 @@ module "auth0-app" {
 }
 
 module "auth0-api" {
-  source                  = "./module/auth0"
-  client_name             = var.client_name
-  client_description      = var.client_description
-  client_app_type         = "api"
-  callback_domains        = []
-  callback_path           = ""
-  pre_fix                 = "api"
-  jwt_alg                 = var.jwt_alg
-  jwt_lifetime_in_seconds = var.jwt_lifetime_in_seconds
+  source = "./module/auth0/api"
+  name   = var.client_name
 }
