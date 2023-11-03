@@ -6,8 +6,8 @@ repos:
   - repo: local
     hooks:
       - id: make-before-commit
-        name: make before_commit
-        entry: make before_commit
+        name: Run Makefiles
+        entry: bash -c 'make before_commit && make -C tool/infrastructure/ before_commit'
         language: system
         always_run: true
         pass_filenames: false
