@@ -64,7 +64,13 @@ variable "oidc_conformant" {
   default     = true
 }
 
-variable "pre_fix" {
+variable "pre_fix_application" {
+  description = "Prefix for the Auth0 client"
+  type        = string
+  default     = "test"
+}
+
+variable "pre_fix_api" {
   description = "Prefix for the Auth0 client"
   type        = string
   default     = "test"

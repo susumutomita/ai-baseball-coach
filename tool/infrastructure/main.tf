@@ -7,7 +7,7 @@ module "auth0-app" {
   callback_domains        = var.callback_domains
   callback_path           = var.callback_path
   oidc_conformant         = var.oidc_conformant
-  pre_fix                 = var.pre_fix
+  pre_fix                 = var.pre_fix_application
   jwt_alg                 = var.jwt_alg
   jwt_lifetime_in_seconds = var.jwt_lifetime_in_seconds
 }
@@ -16,5 +16,5 @@ module "auth0-api" {
   source    = "./module/auth0/api"
   client_id = module.auth0-app.client_id
   name      = var.client_name
-  pre_fix   = var.pre_fix
+  pre_fix   = var.pre_fix_api
 }
