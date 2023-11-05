@@ -1,3 +1,14 @@
+variable "api_scopes" {
+  description = "The list of scopes to grant to the client for the API"
+  type        = list(string)
+  default     = ["read:data", "write:data"]
+}
+
+variable "client_id" {
+  description = "The client ID of the application"
+  type        = string
+}
+
 variable "name" {
   description = "The name of the Auth0 client"
   type        = string

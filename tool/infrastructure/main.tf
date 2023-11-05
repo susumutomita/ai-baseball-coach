@@ -13,7 +13,8 @@ module "auth0-app" {
 }
 
 module "auth0-api" {
-  source  = "./module/auth0/api"
-  name    = var.client_name
-  pre_fix = var.pre_fix
+  source    = "./module/auth0/api"
+  client_id = module.auth0-app.client_id
+  name      = var.client_name
+  pre_fix   = var.pre_fix
 }

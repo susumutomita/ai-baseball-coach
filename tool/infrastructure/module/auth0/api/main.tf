@@ -14,3 +14,9 @@ resource "auth0_resource_server_scopes" "api" {
     }
   }
 }
+
+resource "auth0_client_grant" "api_grant" {
+  client_id = var.client_id
+  audience  = auth0_resource_server.api.identifier
+  scopes    = var.api_scopes
+}
