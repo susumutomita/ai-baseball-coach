@@ -37,10 +37,6 @@ variable "scopes" {
     {
       name        = "read:data",
       description = "Read data"
-    },
-    {
-      name        = "write:data",
-      description = "Write data"
-    },
+    }
   ]
 }
