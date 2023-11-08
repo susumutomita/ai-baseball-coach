@@ -37,6 +37,10 @@ variable "scopes" {
     {
       name        = "read:data",
       description = "Read data"
+    },
+    {
+      name        = "read:messages",
+      description = "Read messages"
     }
   ]
 }
