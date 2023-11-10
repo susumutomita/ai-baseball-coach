@@ -2,7 +2,7 @@ import json
 import os
 from urllib.parse import quote_plus, urlencode
 
-from authlib.integrations.flask_client import OAuth
+from auth.auth import setup_auth
 from config import Config
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 from flask_cors import CORS
@@ -18,18 +18,11 @@ app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 api = Api(app)
-print(app.config)
-oauth = OAuth(app)
+app = Flask(__name__)
+app.config.from_object(Config)
 
-oauth.register(
-    "auth0",
-    client_id=app.config["AUTH0_CLIENT_ID"],
-    client_secret=app.config["AUTH0_CLIENT_SECRET"],
-    client_kwargs={
-        "scope": "openid profile email",
-    },
-    server_metadata_url=f'https://{app.config["AUTH0_DOMAIN"]}/.well-known/openid-configuration',
-)
+# Auth0のセットアップ
+oauth = setup_auth(app)
 
 
 def read_files(directory_path, file_extension):
