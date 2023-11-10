@@ -18,10 +18,6 @@ app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 api = Api(app)
-app = Flask(__name__)
-app.config.from_object(Config)
-
-# Auth0のセットアップ
 oauth = setup_auth(app)
 
 
