@@ -1,10 +1,9 @@
 import json
 import os
-from os import environ as env
 from urllib.parse import quote_plus, urlencode
 
 from authlib.integrations.flask_client import OAuth
-from dotenv import find_dotenv, load_dotenv
+from config import Config
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
@@ -16,25 +15,20 @@ PROMPT_TEMPLATE_PATH = "./prompt_template.txt"
 DEFAULT_MODEL_TYPE = "gpt2"
 
 app = Flask(__name__)
-app.secret_key = env.get("APP_SECRET_KEY")
+app.config.from_object(Config)
 CORS(app)
 api = Api(app)
-
-ENV_FILE = find_dotenv()
-if ENV_FILE:
-    load_dotenv(ENV_FILE)
-
 
 oauth = OAuth(app)
 
 oauth.register(
     "auth0",
-    client_id=env.get("AUTH0_CLIENT_ID"),
-    client_secret=env.get("AUTH0_CLIENT_SECRET"),
+    client_id=app.config["AUTH0_CLIENT_ID"],
+    client_secret=app.config["AUTH0_CLIENT_SECRET"],
     client_kwargs={
         "scope": "openid profile email",
     },
-    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration',
+    server_metadata_url=f'https://{app.config["AUTH0_DOMAIN"]}/.well-known/openid-configuration',
 )
 
 
@@ -53,7 +47,7 @@ def error_response(message, status_code):
     return jsonify({"error": message}), status_code
 
 
-model_type = os.environ.get("MODEL_TYPE", DEFAULT_MODEL_TYPE)
+model_type = app.config["MODEL_TYPE"]
 
 if model_type == "Plamo":
     model: BaseModel = PlamoModel(model_name="pfnet/plamo-13b")
@@ -106,14 +100,15 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
+    # Redirect URLを構築する
     return redirect(
         "https://"
-        + env.get("AUTH0_DOMAIN")
+        + app.config["AUTH0_DOMAIN"]
         + "/v2/logout?"
         + urlencode(
             {
                 "returnTo": url_for("home", _external=True),
-                "client_id": env.get("AUTH0_CLIENT_ID"),
+                "client_id": app.config["AUTH0_CLIENT_ID"],
             },
             quote_via=quote_plus,
         )
@@ -154,4 +149,4 @@ class QuestionResource(Resource):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=env.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=app.config["PORT"])

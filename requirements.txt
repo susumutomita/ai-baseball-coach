@@ -21,3 +21,4 @@ flask-restx
 flask_oauthlib
 torch
 torchvision
+dotenv
