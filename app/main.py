@@ -18,7 +18,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 api = Api(app)
-
+print(app.config)
 oauth = OAuth(app)
 
 oauth.register(
