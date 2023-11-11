@@ -1,5 +1,4 @@
 import json
-import os
 from urllib.parse import quote_plus, urlencode
 
 from auth.auth import setup_auth
@@ -8,6 +7,7 @@ from flask import Flask, jsonify, redirect, render_template, request, session, u
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
 from models import BaseModel, GptModel, PlamoModel
+from utils.helpers import error_response, read_files
 
 # 定数
 SEARCH_DIRECTORY = "./app/"
@@ -19,21 +19,6 @@ app.config.from_object(Config)
 CORS(app)
 api = Api(app)
 oauth = setup_auth(app)
-
-
-def read_files(directory_path, file_extension):
-    content = ""
-    for root, dirs, files in os.walk(directory_path):
-        for filename in files:
-            if filename.endswith(file_extension):
-                filepath = os.path.join(root, filename)
-                with open(filepath, "r", encoding="utf-8") as file:
-                    content += file.read() + "\n\n"
-    return content
-
-
-def error_response(message, status_code):
-    return jsonify({"error": message}), status_code
 
 
 model_type = app.config["MODEL_TYPE"]
