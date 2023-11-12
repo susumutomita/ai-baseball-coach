@@ -5,20 +5,33 @@
 
 ## Overview
 
-This project aims to assist baseball coaching efforts through the use of AI. It incorporates team rules and responds to specific coaching queries.
+This project aims to assist baseball coaching efforts through the use of AI. It integrates team rules and responds to specific coaching queries.
 
 ## Requirements
 
 - Python 3.x
 - Transformers Library
+- Authlib
+- Flask
+- flask-restx
 
 ## Installation
 
-Install the required Python package using pip:
+Install the required Python packages using pip:
 
 ```bash
-pip install transformers
+pip install -r requirements.txt
 ```
+
+## Setting up Auth0
+
+Use the following script to configure Auth0:
+
+```bash
+tool/infrastructure/build.sh
+```
+
+For more details, refer to [README.md](tool/infrastructure/README.md).
 
 ## Usage
 
@@ -30,9 +43,10 @@ pip install transformers
 python main.py
 ```
 
-### Download and Quantize the Official Facebook Model
+## Docker
 
-1. Download the model from [Facebook's Llama repository](https://github.com/facebookresearch/llama).
-2. Convert and quantize the downloaded model using [llama.cpp](https://github.com/ggerganov/llama.cpp).
+You can also run the application using Docker. Set your Auth0 information as environment variables in the docker-compose.yaml file and run:
 
-For detailed instructions, please refer to [Detailed_Instructions.md](Detailed_Instructions.md).
+```bash
+docker compose build && docker compose up
+```
