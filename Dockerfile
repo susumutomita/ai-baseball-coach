@@ -26,4 +26,4 @@ COPY . .
 RUN make install
 
 WORKDIR /app/app
-CMD ["python", "main.py"]
+CMD ["python3", "main.py"]
