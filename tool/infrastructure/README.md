@@ -37,7 +37,7 @@ chmod +x build.sh
 
 ## Usage
 
-Load the environment variables and execute Terraform commands.
+Load the environment variables first. Then, execute Terraform commands.
 
 ```bash
 ./build.sh apply
@@ -48,4 +48,4 @@ The above command is an example of executing the `apply` command of Terraform. Y
 ## Caution
 
 - Do not commit the `.env` file to public repositories as it contains sensitive information.
-- By using `build.sh` to load the environment variables, Terraform will have access to the Auth0 configuration information.
+- Use build.sh to load the environment variables. This allows Terraform to access the Auth0 configuration information.

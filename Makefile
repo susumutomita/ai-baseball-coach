@@ -25,7 +25,7 @@ lint:
 	cd app && pylint . --rcfile=../.pylintrc
 	yamllint -c .yamllint .
 	flake8 .
-	npx textlint ./README.md
+	npx textlint **/README.md
 
 .PHONY: format
 format:
