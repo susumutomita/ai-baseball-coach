@@ -42,6 +42,7 @@ def require_login():
     allowed_routes = ["callback", "login", "logout", "home"]
     if request.endpoint not in allowed_routes:
         if "user" not in session:
+            session["redirect_after_login"] = request.url
             return redirect("/login")
     if request.endpoint == "api.specs" or request.path.startswith("/swagger-ui/"):
         if "user" not in session:
@@ -61,7 +62,7 @@ def home():
 def callback():
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
-    return redirect("/home")
+    return redirect(session.pop("redirect_after_login", "/home"))
 
 
 @app.route("/login")
