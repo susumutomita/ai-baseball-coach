@@ -1,3 +1,7 @@
+.PHONY: validate
+validate:
+	terraform validate
+
 .PHONY: lint
 lint:
 	tflint --recursive
