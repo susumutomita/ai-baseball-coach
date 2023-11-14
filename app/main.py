@@ -17,7 +17,7 @@ DEFAULT_MODEL_TYPE = "gpt2"
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
-api = Api(app)
+api = Api(app, doc="/api/docs")
 oauth = setup_auth(app)
 
 
@@ -39,18 +39,16 @@ question_model = api.model(
 
 @app.before_request
 def require_login():
-    allowed_routes = ["callback", "login", "logout"]
+    allowed_routes = ["callback", "login", "logout", "home"]
     if request.endpoint not in allowed_routes:
         if "user" not in session:
             return redirect("/login")
-    # Swaggerのページにも認証を要求
     if request.endpoint == "api.specs" or request.path.startswith("/swagger-ui/"):
         if "user" not in session:
             return redirect("/login")
 
 
-# Controllers API
-@app.route("/")
+@app.route("/home")
 def home():
     return render_template(
         "home.html",
@@ -63,7 +61,7 @@ def home():
 def callback():
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
-    return redirect("/")
+    return redirect("/home")
 
 
 @app.route("/login")
@@ -74,7 +72,6 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
-    # Redirect URLを構築する
     return redirect(
         "https://"
         + app.config["AUTH0_DOMAIN"]
@@ -123,4 +120,4 @@ class QuestionResource(Resource):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=app.config["PORT"])
+    app.run(host="0.0.0.0", port=app.config["PORT"], debug=True)
