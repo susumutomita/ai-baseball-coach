@@ -1,29 +1,16 @@
+# app/routes.py
+
 import json
 from urllib.parse import quote_plus, urlencode
 
-from flask import jsonify, redirect, render_template, request, session, url_for
-from flask_restx import Resource, fields
-from models import BaseModel, GptModel, PlamoModel
-from utils.helpers import error_response, read_files
+from flask import redirect, render_template, request, session, url_for
+
+from app.api.endpoints.question import create_question_resource
 
 
-def configure_routes(app, api, oauth):
-    SEARCH_DIRECTORY = "./app/"
-    PROMPT_TEMPLATE_PATH = "./prompt_template.txt"
-    TEAM_RULES = read_files(SEARCH_DIRECTORY, ".ja_jp.md")
-    PROMPT_FOR_GENERATION_FORMAT = read_files(PROMPT_TEMPLATE_PATH, ".txt")
-    model_type = app.config["MODEL_TYPE"]
-
-    if model_type == "Plamo":
-        model: BaseModel = PlamoModel(model_name="pfnet/plamo-13b")
-    elif model_type == "gpt2":
-        model: BaseModel = GptModel(model_name="gpt2")
-
-    question_model = api.model(
-        "Question",
-        {"question": fields.String(required=True, description="The question you want to ask")},
-    )
-
+def configure_routes(
+    app, api, oauth, model, question_model, PROMPT_FOR_GENERATION_FORMAT, TEAM_RULES
+):
     @app.route("/home")
     def home():
         return render_template(
@@ -58,38 +45,6 @@ def configure_routes(app, api, oauth):
             )
         )
 
-    @api.route("/api/question")
-    class QuestionResource(Resource):
-        def check_auth(self):
-            if "user" not in session:
-                return redirect("/login")
-            return None
-
-        @api.expect(question_model, validate=True)
-        def post(self):
-            auth_result = self.check_auth()
-            if auth_result:
-                return auth_result
-            if not request.json:
-                return error_response("Invalid input, JSON expected", 400)
-
-            user_input = request.json.get("question")
-            if not user_input:
-                return error_response("Missing 'question' field in input JSON", 400)
-
-            response_text = model.generate_text(
-                prompt=f"{PROMPT_FOR_GENERATION_FORMAT}\n{user_input}\n{TEAM_RULES}",
-                max_tokens=120,
-                temperature=0.2,
-            )
-
-            response_only = (
-                response_text.split("Response:")[1].strip()
-                if "Response:" in response_text
-                else response_text
-            )
-            return jsonify({"response": response_only})
-
     @app.before_request
     def require_login():
         allowed_routes = ["callback", "login", "logout", "home"]
@@ -97,6 +52,12 @@ def configure_routes(app, api, oauth):
             if "user" not in session:
                 session["redirect_after_login"] = request.url
                 return redirect("/login")
-        if request.endpoint == "api.specs" or request.path.startswith("/swagger-ui/"):
-            if "user" not in session:
-                return redirect("/login")
+            if request.endpoint == "api.specs" or request.path.startswith("/swagger-ui/"):
+                if "user" not in session:
+                    return redirect("/login")
+
+    # Question APIの設定
+    QuestionResource = create_question_resource(
+        api, model, question_model, PROMPT_FOR_GENERATION_FORMAT, TEAM_RULES
+    )
+    api.add_resource(QuestionResource, "/api/question")
