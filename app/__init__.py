@@ -1,5 +1,3 @@
-# app/__init__.py
-
 """Module docstring: This module initializes the Flask application."""
 
 # サードパーティ

@@ -1,24 +1,9 @@
-# app/routes.py
-
-import json
 from urllib.parse import quote_plus, urlencode
 
-from flask import redirect, render_template, request, session, url_for
-
-from app.api.endpoints.question import create_question_resource
+from flask import redirect, request, session, url_for
 
 
-def configure_routes(
-    app, api, oauth, model, question_model, PROMPT_FOR_GENERATION_FORMAT, TEAM_RULES
-):
-    @app.route("/home")
-    def home():
-        return render_template(
-            "home.html",
-            session=session.get("user"),
-            pretty=json.dumps(session.get("user"), indent=4),
-        )
-
+def configure_auth_routes(app, oauth):
     @app.route("/callback", methods=["GET", "POST"])
     def callback():
         token = oauth.auth0.authorize_access_token()
@@ -55,9 +40,3 @@ def configure_routes(
             if request.endpoint == "api.specs" or request.path.startswith("/swagger-ui/"):
                 if "user" not in session:
                     return redirect("/login")
-
-    # Question APIの設定
-    QuestionResource = create_question_resource(
-        api, model, question_model, PROMPT_FOR_GENERATION_FORMAT, TEAM_RULES
-    )
-    api.add_resource(QuestionResource, "/api/question")
