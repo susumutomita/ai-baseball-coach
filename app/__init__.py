@@ -18,7 +18,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     CORS(app)
-    api = Api(app, doc="/api/docs")
+    api = Api(app, doc="/api/docs", specification="static/ai_baseball_coach_api.yaml")
     oauth = setup_auth(app)
 
     model_type = app.config["MODEL_TYPE"]

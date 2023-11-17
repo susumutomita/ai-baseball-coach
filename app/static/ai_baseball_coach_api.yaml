@@ -5,7 +5,7 @@ info:
   description: An API to assist baseball coaching efforts through the use of AI.
 
 servers:
-  - url: http://localhost:5000
+  - url: http://localhost:8080
 
 paths:
   /question:
